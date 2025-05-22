@@ -19,7 +19,7 @@ if (savedRooms.length > 0) {
       room = new Room(roomData.number, roomData.type);
     }
     room.isAvailable = roomData.isAvailable;
-    room.bookedBy = roomData.bookedBy || null; // ✅ bookedBy bilgisi geri atanıyor
+    room.bookedBy = roomData.bookedBy || null;
     hotel.addRoom(room);
   });
 } else {
@@ -47,7 +47,7 @@ window.bookRoom = (number) => {
 
   const room = hotel.rooms.find(r => r.number === number);
   if (room && room.isAvailable) {
-    room.book(user.username); // ✅ kullanıcı adı kaydediliyor
+    room.book(user.username);
     saveToStorage();
     ui.render();
   }
@@ -68,4 +68,37 @@ window.cancelRoom = (number) => {
   room.cancelBooking();
   saveToStorage();
   ui.render();
+};
+
+// 
+wwindow.addReview = function () {
+  const email = document.getElementById("reviewEmail").value.trim();
+  const roomNumber = parseInt(document.getElementById("reviewRoom").value);
+  const body = document.getElementById("reviewBody").value.trim();
+
+  if (!email.includes("@") || isNaN(roomNumber) || !body) {
+    alert("Please fill out all fields correctly.");
+    return;
+  }
+
+  const review = { email, roomNumber, body };
+
+  fetch("http://localhost:3000/reviews", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(review)
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to add review.");
+      return res.json();
+    })
+    .then(() => {
+      alert("Review submitted!");
+      document.getElementById("reviewEmail").value = "";
+      document.getElementById("reviewRoom").value = "";
+      document.getElementById("reviewBody").value = "";
+    })
+    .catch(err => alert("Error: " + err.message));
 };

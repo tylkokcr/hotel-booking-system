@@ -39,6 +39,20 @@ export default class UI {
         window.cancelRoom(number);
       });
     });
+
+    // === Zadanie 1: REVIEW FORM EKLEME ===
+    const reviewForm = document.createElement("div");
+    reviewForm.id = "reviewForm";
+    reviewForm.innerHTML = `
+      <h2>Add a Review</h2>
+      <input type="email" id="reviewEmail" placeholder="Your email" />
+      <input type="number" id="reviewRoom" placeholder="Room number" />
+      <br />
+      <textarea id="reviewBody" placeholder="Write your review here"></textarea>
+      <br />
+      <button onclick="addReview()">Add Review</button>
+    `;
+    document.body.appendChild(reviewForm);
   }
 
   renderAuthUI() {
@@ -86,7 +100,7 @@ export default class UI {
         }
       });
 
-      //  Enter  login
+      //  Enter ile login
       container.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
