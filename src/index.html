@@ -7,7 +7,26 @@
 <body>
   <div id="app"></div>
 
-  <!-- 🔽 Yorum formu burada -->
+  <!-- REGISTER & LOGIN FORMLARI -->
+  <section id="authSection" style="margin: 40px auto; width: 300px;">
+    <div id="registerForm">
+      <h2>Register</h2>
+      <input id="regUsername" placeholder="Username" style="display: block; margin-bottom: 10px; width: 100%; padding: 8px;" />
+      <input id="regPassword" placeholder="Password" type="password" style="display: block; margin-bottom: 10px; width: 100%; padding: 8px;" />
+      <button onclick="register()" style="padding: 10px 15px; background-color: #004aad; color: white; border: none; border-radius: 5px;">Register</button>
+    </div>
+    <br>
+    <div id="loginForm">
+      <h2>Login</h2>
+      <input id="loginUsername" placeholder="Username" style="display: block; margin-bottom: 10px; width: 100%; padding: 8px;" />
+      <input id="loginPassword" placeholder="Password" type="password" style="display: block; margin-bottom: 10px; width: 100%; padding: 8px;" />
+      <button onclick="login()" style="padding: 10px 15px; background-color: #009a4d; color: white; border: none; border-radius: 5px;">Login</button>
+    </div>
+    <div id="welcomeMsg" style="margin-top: 20px; color: #333;"></div>
+    <button onclick="logout()" id="logoutBtn" style="display:none; margin-top:10px; background:#b10000; color:white; border:none; border-radius:5px; padding:10px 15px;">Logout</button>
+  </section>
+
+  <!-- REVIEW FORMU -->
   <section id="reviewSection" style="margin: 40px auto; width: 300px;">
     <h2>Add a Review</h2>
     <input type="email" id="reviewEmail" placeholder="Your email" style="display: block; margin-bottom: 10px; width: 100%; padding: 8px;" />

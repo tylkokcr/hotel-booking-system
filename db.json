@@ -1,0 +1,22 @@
+{
+  "reviews": [
+    {
+      "id": "HMF7515TW6sKKeRCURzYz",
+      "roomNumber": 102,
+      "email": "a@gmail.com",
+      "body": "good"
+    },
+    {
+      "id": "HmkEGards9run0GxDCnyu",
+      "roomNumber": 101,
+      "email": "c@gmail.com",
+      "body": "bad"
+    }
+  ],
+  "users": [
+    {
+      "username": "guest1",
+      "password": "$2b$10$enyhokP6tqNP52oOXkoaU.oND3vQuFQmDbLt7lbjV3qHWf76AZsZa"
+    }
+  ]
+}

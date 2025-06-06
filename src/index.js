@@ -1,85 +1,97 @@
-import Room from "./modules/Room.js";
-import Hotel from "./modules/Hotel.js";
-import PremiumRoom from "./modules/PremiumRoom.js";
-import UI from "./modules/UI.js";
-import UserManager from "./services/UserManager.js";
-import "./styles.css";
-
-// Local storage'dan oda verisini çek
-const savedRooms = JSON.parse(localStorage.getItem("rooms")) || [];
-const hotel = new Hotel("Grand Hotel");
-
-// Oda verisini yükle
-if (savedRooms.length > 0) {
-  savedRooms.forEach(roomData => {
-    let room;
-    if (roomData.premiumService) {
-      room = new PremiumRoom(roomData.number, roomData.type, roomData.premiumService);
-    } else {
-      room = new Room(roomData.number, roomData.type);
-    }
-    room.isAvailable = roomData.isAvailable;
-    room.bookedBy = roomData.bookedBy || null;
-    hotel.addRoom(room);
+// --- Register ---
+window.register = async function() {
+  const username = document.getElementById('regUsername').value;
+  const password = document.getElementById('regPassword').value;
+  if (!username || !password) {
+    alert("Please fill all fields.");
+    return;
+  }
+  const res = await fetch("http://localhost:3000/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
   });
-} else {
-  hotel.addRoom(new Room(101, "single"));
-  hotel.addRoom(new Room(102, "double"));
-  hotel.addRoom(new PremiumRoom(201, "suite", "Spa"));
-  saveToStorage();
+  const data = await res.json();
+  alert(data.message);
+};
+
+// --- Login ---
+window.login = async function() {
+  const username = document.getElementById('loginUsername').value;
+  const password = document.getElementById('loginPassword').value;
+  if (!username || !password) {
+    alert("Please fill all fields.");
+    return;
+  }
+  const res = await fetch("http://localhost:3000/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+  const data = await res.json();
+  alert(data.message);
+  if (res.ok) {
+    localStorage.setItem("user", username);
+    showUserUI(username);
+  }
+};
+
+// --- Logout ---
+window.logout = function() {
+  localStorage.removeItem("user");
+  location.reload();
+};
+
+// --- Oturum durumuna göre UI ---
+function showUserUI(username) {
+  document.getElementById('welcomeMsg').textContent = `Welcome, ${username}!`;
+  document.getElementById('logoutBtn').style.display = "block";
+  // Formları toplu şekilde gizle
+  document.getElementById('registerForm').style.display = "none";
+  document.getElementById('loginForm').style.display = "none";
+  // E-mail alanını doldur ve kitlet
+  const reviewEmail = document.getElementById("reviewEmail");
+  if (reviewEmail) {
+    reviewEmail.value = username;
+    reviewEmail.disabled = true;
+  }
 }
 
-function saveToStorage() {
-  localStorage.setItem("rooms", JSON.stringify(hotel.getAllRooms()));
-}
-
-const ui = new UI(hotel);
-
+// --- Sayfa açılışında oturum kontrolü ---
 document.addEventListener("DOMContentLoaded", () => {
-  ui.render();
+  const user = localStorage.getItem("user");
+  if (user) {
+    showUserUI(user);
+  } else {
+    document.getElementById('logoutBtn').style.display = "none";
+    document.getElementById('registerForm').style.display = "block";
+    document.getElementById('loginForm').style.display = "block";
+    // Review e-mail alanını aç
+    const reviewEmail = document.getElementById("reviewEmail");
+    if (reviewEmail) {
+      reviewEmail.value = "";
+      reviewEmail.disabled = false;
+    }
+  }
 });
 
-// Kullanıcı rezervasyon yaparsa
-window.bookRoom = (number) => {
-  const userManager = new UserManager();
-  const user = userManager.getLoggedInUser();
-  if (!user) return alert("Please log in to book.");
-
-  const room = hotel.rooms.find(r => r.number === number);
-  if (room && room.isAvailable) {
-    room.book(user.username);
-    saveToStorage();
-    ui.render();
+// --- Review eklerken login kontrolü ---
+window.addReview = function () {
+  const user = localStorage.getItem("user");
+  if (!user) {
+    alert("Please login to submit a review.");
+    return;
   }
-};
-
-// Kullanıcı rezervasyon iptal ederse
-window.cancelRoom = (number) => {
-  const userManager = new UserManager();
-  const user = userManager.getLoggedInUser();
-  const room = hotel.rooms.find(r => r.number === number);
-
-  if (!room || room.isAvailable) return;
-
-  if (room.bookedBy !== user.username) {
-    return alert("You can only cancel your own reservation.");
-  }
-
-  room.cancelBooking();
-  saveToStorage();
-  ui.render();
-};
-
-// 
-wwindow.addReview = function () {
-  const email = document.getElementById("reviewEmail").value.trim();
   const roomNumber = parseInt(document.getElementById("reviewRoom").value);
   const body = document.getElementById("reviewBody").value.trim();
 
-  if (!email.includes("@") || isNaN(roomNumber) || !body) {
+  if (isNaN(roomNumber) || !body) {
     alert("Please fill out all fields correctly.");
     return;
   }
+
+  // Email alanı username ile eşleşiyor
+  const email = user;
 
   const review = { email, roomNumber, body };
 
@@ -96,9 +108,9 @@ wwindow.addReview = function () {
     })
     .then(() => {
       alert("Review submitted!");
-      document.getElementById("reviewEmail").value = "";
       document.getElementById("reviewRoom").value = "";
       document.getElementById("reviewBody").value = "";
+      // E-mail alanı zaten username'de kalıyor
     })
     .catch(err => alert("Error: " + err.message));
 };
